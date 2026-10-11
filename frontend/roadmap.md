@@ -1,0 +1,6 @@
+- [x] Build ACFLO-branded responsive site with all requested mock-data pages and navigation.
+- [x] Add searchable directories, media interactions, forms, and detail pages.
+- [x] Add an interactive, automatically rotating homepage image slider with accessible controls.
+- [x] Verify desktop/mobile rendering and interactions.
+- [ ] Add and verify the interactive 3D homepage visual while preserving the image slider.
+- [ ] Add ZOZAC Community’s contact location and Google Maps display (connection approval required).
