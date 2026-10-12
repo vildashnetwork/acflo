@@ -1,11 +1,15 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/auth" });
+    // Guarded by the ACFLO backend admin session (JWT in localStorage).
+    try {
+      await api.me();
+    } catch {
+      throw redirect({ to: "/auth" });
+    }
   },
   component: () => <Outlet />,
 });

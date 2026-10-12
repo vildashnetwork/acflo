@@ -2,6 +2,7 @@
 
 const { Router } = require("express");
 const { dbState } = require("../config/db");
+const authRoutes = require("./auth");
 const contentRoutes = require("./content");
 const mediaRoutes = require("./media");
 const messageRoutes = require("./messages");
@@ -19,6 +20,7 @@ router.get("/health", (req, res) => {
   });
 });
 
+router.use("/auth", authRoutes);
 router.use("/content", contentRoutes);
 router.use("/media", mediaRoutes);
 router.use("/messages", messageRoutes);

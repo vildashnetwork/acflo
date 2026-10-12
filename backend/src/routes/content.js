@@ -2,7 +2,7 @@
 
 const { Router } = require("express");
 const upload = require("../middleware/upload");
-const { requireApiToken } = require("../middleware/auth");
+const { requireAdminOrToken } = require("../middleware/auth");
 const {
   listContent,
   listKinds,
@@ -27,8 +27,8 @@ const fields = upload.fields([
   { name: "file", maxCount: 1 },
 ]);
 
-router.post("/", requireApiToken, fields, createContent);
-router.put("/:id", requireApiToken, fields, updateContent);
-router.delete("/:id", requireApiToken, deleteContent);
+router.post("/", requireAdminOrToken, fields, createContent);
+router.put("/:id", requireAdminOrToken, fields, updateContent);
+router.delete("/:id", requireAdminOrToken, deleteContent);
 
 module.exports = router;

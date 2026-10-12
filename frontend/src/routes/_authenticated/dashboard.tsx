@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2, LogOut, Upload, Pencil, Eye, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api, clearToken } from "@/lib/api";
 import { kinds, type Kind, type Item } from "@/lib/cms";
 import { Button } from "../../components/site";
 
@@ -19,7 +19,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60) + "-" + Math.random().toString(36).slice(2, 6);
 const field = "min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-primary";
 
 function previewPath(i: Item): string {
@@ -40,13 +39,11 @@ function Dashboard() {
   const [kind, setKind] = useState<Kind>("gallery");
   const [editing, setEditing] = useState<Item | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  useEffect(() => { supabase.auth.getUser().then(async ({ data }) => {
-    const { data: ok } = await supabase.rpc("has_role", { _user_id: data.user!.id, _role: "admin" }); setIsAdmin(!!ok);
-  }); }, []);
-  const items = useQuery({ queryKey: ["dash", kind], queryFn: async () => (await supabase.from("content_items").select("*").eq("kind", kind).order("created_at", { ascending: false })).data as Item[] ?? [] });
+  useEffect(() => { api.me().then(() => setIsAdmin(true)).catch(() => setIsAdmin(false)); }, []);
+  const items = useQuery({ queryKey: ["dash", kind], queryFn: async () => ((await api.listContent({ kind })).items ?? []) as Item[] });
 
-  async function signOut() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); nav({ to: "/auth", replace: true }); }
-  async function remove(id: string) { if (!confirm("Delete this post?")) return; await supabase.from("content_items").delete().eq("id", id); refresh(); }
+  async function signOut() { await qc.cancelQueries(); qc.clear(); clearToken(); nav({ to: "/auth", replace: true }); }
+  async function remove(id: string) { if (!confirm("Delete this post?")) return; await api.deleteContent(id); refresh(); }
   function refresh() { qc.invalidateQueries({ queryKey: ["dash"] }); qc.invalidateQueries({ queryKey: ["public-content"] }); }
   function switchKind(k: Kind) { setKind(k); setEditing(null); }
 
@@ -80,28 +77,19 @@ function PostForm({ kind, item, onDone, onCancel }: { kind: Kind; item: Item | n
   const [file, setFile] = useState<File | null>(null); const [attach, setAttach] = useState<File | null>(null);
   const [busy, setBusy] = useState(false); const [msg, setMsg] = useState("");
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setV({ ...v, [k]: e.target.value });
-  async function upload(fl: File) {
-    const path = `${kind}/${Date.now()}-${fl.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
-    const { error } = await supabase.storage.from("media").upload(path, fl, { contentType: fl.type });
-    if (error) throw error;
-    return `${window.location.origin}/api/public/media/${path}`;
-  }
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setMsg("");
     try {
-      const { data: u } = await supabase.auth.getUser();
-      const image_url = file ? await upload(file) : item?.image_url ?? null;
-      const file_url = attach ? await upload(attach) : item?.file_url ?? null;
       const row = {
-        kind, title: v.title, excerpt: v.excerpt ?? "", body: v.body ?? "",
+        kind, title: v.title ?? "", excerpt: v.excerpt ?? "", body: v.body ?? "",
         category: v.category ?? "", country: v.country ?? "", city: v.city ?? "", location: v.location ?? "",
         website: v.website || null, video_url: v.video_url || null, event_date: v.event_date || null,
-        image_url, file_url, published: true,
+        published: true,
       };
-      const { error } = item
-        ? await supabase.from("content_items").update(row).eq("id", item.id)
-        : await supabase.from("content_items").insert({ ...row, slug: slugify(v.title || "post"), author_id: u.user?.id });
-      if (error) throw error;
+      // Files are sent with the request; the backend uploads them to Cloudinary.
+      const files = { image: file, file: attach };
+      if (item) await api.updateContent(item.id, row, files);
+      else await api.createContent(row, files);
       setMsg(item ? "Saved! The changes are live on the site." : "Published! It now appears on the site.");
       if (!item) { setV({}); setFile(null); setAttach(null); (e.target as HTMLFormElement).reset(); }
       onDone();

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { api, setToken } from "@/lib/api";
 import { Button } from "../components/site";
 
 export const Route = createFileRoute("/auth")({
@@ -21,15 +21,17 @@ function AuthPage() {
   const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
   const [msg, setMsg] = useState(""); const [busy, setBusy] = useState(false);
   const [setup, setSetup] = useState(false);
+  useEffect(() => {
+    // Auto-detect first run: show "Create first admin" when none exists yet.
+    api.setupStatus().then((s) => setSetup(s.needsSetup)).catch(() => {});
+  }, []);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setMsg("");
     try {
-      if (setup) {
-        const r = await fetch("/api/public/bootstrap-admin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
-        if (!r.ok) throw new Error(r.status === 403 ? "An admin already exists. Please sign in instead." : await r.text());
-      }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const { token } = setup
+        ? await api.bootstrap({ email, password })
+        : await api.login({ email, password });
+      setToken(token);
       nav({ to: "/dashboard" });
     } catch (err) { setMsg((err as Error).message); } finally { setBusy(false); }
   }

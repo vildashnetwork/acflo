@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: corsOrigin ? corsOrigin.split(",").map((s) => s.trim()) : true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "x-api-token"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-api-token"],
   })
 );
 
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
     version: "1.0.0",
     endpoints: {
       health: "/api/health",
+      auth: "/api/auth (setup, bootstrap, login, me, admins)",
       content: "/api/content",
       contentKinds: "/api/content/kinds",
       contentBySlug: "/api/content/:kind/:slug",

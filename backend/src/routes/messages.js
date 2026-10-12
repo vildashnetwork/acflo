@@ -1,7 +1,7 @@
 "use strict";
 
 const { Router } = require("express");
-const { requireApiToken } = require("../middleware/auth");
+const { requireAdminOrToken } = require("../middleware/auth");
 const {
   createMessage,
   listMessages,
@@ -14,9 +14,9 @@ const router = Router();
 // Public: forms on the frontend can always post messages.
 router.post("/", createMessage);
 
-// Admin: reading/managing messages is protected when API_TOKEN is set.
-router.get("/", requireApiToken, listMessages);
-router.patch("/:id", requireApiToken, updateMessage);
-router.delete("/:id", requireApiToken, deleteMessage);
+// Admin: reading/managing messages requires a signed-in admin.
+router.get("/", requireAdminOrToken, listMessages);
+router.patch("/:id", requireAdminOrToken, updateMessage);
+router.delete("/:id", requireAdminOrToken, deleteMessage);
 
 module.exports = router;

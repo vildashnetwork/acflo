@@ -1,18 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// One-time: creates the first admin only when no admin exists yet.
+// Proxies first-admin creation to the ACFLO backend (MongoDB admins).
+// Kept for backward compatibility — the auth page now calls the backend directly.
 export const Route = createFileRoute("/api/public/bootstrap-admin")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { email, password } = (await request.json()) as { email: string; password: string };
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { count } = await supabaseAdmin.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "admin");
-        if ((count ?? 0) > 0) return new Response("Already set up", { status: 403 });
-        const { data, error } = await supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { display_name: "ACFLO Admin", organization: "ACFLO" } });
-        if (error || !data.user) return new Response(error?.message ?? "fail", { status: 500 });
-        await supabaseAdmin.from("user_roles").insert({ user_id: data.user.id, role: "admin" });
-        return new Response("ok");
+        const body = await request.text();
+        const base = ((typeof process !== "undefined" && process.env["API_URL"]) || "http://localhost:5000").replace(
+          /\/+$/,
+          "",
+        );
+        try {
+          const res = await fetch(`${base}/api/auth/bootstrap`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body,
+          });
+          const text = await res.text();
+          return new Response(text, {
+            status: res.status,
+            headers: { "content-type": "application/json" },
+          });
+        } catch {
+          return new Response(JSON.stringify({ error: "ACFLO backend is not reachable" }), {
+            status: 502,
+            headers: { "content-type": "application/json" },
+          });
+        }
       },
     },
   },

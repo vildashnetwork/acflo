@@ -43,6 +43,39 @@ Health check: `GET http://localhost:5000/api/health`
 > fallback (`1.1.1.1`/`8.8.8.8`), so the API also works behind local DNS
 > proxies such as Cloudflare WARP.
 
+## Authentication (admins)
+
+Admins live in MongoDB (bcrypt-hashed passwords) — no Supabase required.
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| `GET` | `/api/auth/setup` | public | `{ needsSetup }` — true when no admin exists yet |
+| `POST` | `/api/auth/bootstrap` | public | Create the **first** admin (403 once one exists). Returns `{ token, admin }` |
+| `POST` | `/api/auth/login` | public | `{ email, password }` → `{ token, admin }` (token valid 7 days) |
+| `GET` | `/api/auth/me` | Bearer | Current admin profile |
+| `GET` | `/api/auth/admins` | public | Sanitized admin profiles for the Partners page (no emails) |
+| `POST` | `/api/auth/admins` | Bearer | Create an additional admin |
+| `DELETE` | `/api/auth/admins/:id` | Bearer | Remove another admin (not yourself) |
+
+**Protected routes:** `POST/PUT/DELETE /api/content`, `POST/DELETE /api/media`,
+and `GET/PATCH/DELETE /api/messages` require either
+
+- `Authorization: Bearer <token>` from login/bootstrap (what the frontend dashboard sends), or
+- the optional static `x-api-token: <API_TOKEN>` header (for scripts).
+
+`GET` endpoints for content/media and `POST /api/messages` (contact forms) stay public.
+
+```bash
+# Typical flow
+TOKEN=$(curl -s -X POST localhost:5000/api/auth/login \
+  -H "content-type: application/json" \
+  -d '{"email":"you@example.com","password":"..."}' | jq -r .token)
+
+curl -X POST localhost:5000/api/content \
+  -H "Authorization: Bearer $TOKEN" -H "content-type: application/json" \
+  -d '{"kind":"news","title":"Hello","country":"Cameroon"}'
+```
+
 ## Endpoints
 
 ### Content
