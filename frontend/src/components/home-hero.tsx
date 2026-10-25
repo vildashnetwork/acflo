@@ -14,7 +14,10 @@ export function HomeHero() {
 
   useEffect(() => {
     if (paused) return;
-    const timer = window.setInterval(() => setActive((current) => (current + 1) % heroSlides.length), SLIDE_DURATION);
+    const timer = window.setInterval(
+      () => setActive((current) => (current + 1) % heroSlides.length),
+      SLIDE_DURATION,
+    );
     return () => window.clearInterval(timer);
   }, [paused]);
 
@@ -22,7 +25,7 @@ export function HomeHero() {
     <section
       aria-roledescription="carousel"
       aria-label="ACFLO community highlights"
-      className="group/hero relative flex min-h-[620px] items-center overflow-hidden bg-deep text-primary-foreground md:min-h-[680px]"
+      className="group/hero relative flex min-h-[760px] items-end overflow-hidden bg-lime text-deep sm:min-h-[800px] lg:min-h-[680px] lg:items-center"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -41,21 +44,32 @@ export function HomeHero() {
             src={slide.image}
             alt={index === active ? slide.alt : ""}
             aria-hidden={index !== active}
-            className={`hero-slide absolute inset-0 h-full w-full object-cover ${index === active ? "is-active" : ""}`}
+            className={`hero-slide absolute inset-x-0 top-0 h-[340px] w-full object-cover sm:h-[390px] lg:inset-y-0 lg:left-[42%] lg:right-0 lg:h-full lg:w-[58%] lg:[clip-path:polygon(14%_0,100%_0,100%_100%,0_100%)] ${index === active ? "is-active" : ""}`}
           />
         ))}
       </div>
       <div className="hero-shade absolute inset-0" />
       <div className="hero-texture absolute inset-0" />
 
-      <div className="container-site relative z-10 py-24">
-        <div className="max-w-3xl animate-hero-copy">
-          <span className="inline-flex items-center gap-2 border-l-2 border-lime pl-3 text-xs font-extrabold uppercase tracking-[.13em] text-lime">A flagship program of ZOZAC Community</span>
-          <h1 className="mt-7 max-w-3xl font-display text-[clamp(2.8rem,5.4vw,5.75rem)] font-extrabold leading-[1.08] text-balance">Connecting Local Organizations. <span className="text-lime">Advancing Africa.</span></h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 opacity-90 md:text-lg">ACFLO brings local organizations and community-driven actors together to strengthen collaboration, build capacity and create lasting impact across Africa.</p>
+      <div className="container-site relative z-10 pb-28 pt-[350px] sm:pt-[400px] lg:py-28">
+        <div className="max-w-2xl animate-hero-copy lg:max-w-[54%]">
+          <span className="inline-flex items-center gap-2 border-l-2 border-deep pl-3 text-xs font-extrabold uppercase tracking-[.13em] text-deep">
+            A flagship program of ZOZAC Community
+          </span>
+          <h1 className="mt-7 max-w-2xl font-display text-[clamp(2.8rem,6vw,5.6rem)] font-extrabold leading-[1.02] tracking-[-.045em] text-balance">
+            Local voices. <span className="text-accent-foreground">Lasting change.</span>
+          </h1>
+          <p className="mt-6 max-w-xl text-base leading-8 opacity-90 md:text-lg">
+            We connect local organizations, strengthen community leadership and help locally led
+            ideas shape a more collaborative Africa.
+          </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <ActionLink to="/about" variant="light">Explore ACFLO <ArrowUpRight size={17}/></ActionLink>
-            <ActionLink to="/join" className="!bg-lime !text-deep hover:!bg-accent">Join the Network <ArrowRight size={17}/></ActionLink>
+            <ActionLink to="/join" className="!bg-deep !text-primary-foreground hover:!bg-primary">
+              Join the network <ArrowRight size={17} />
+            </ActionLink>
+            <ActionLink to="/our-work" variant="light">
+              See what we do <ArrowUpRight size={17} />
+            </ActionLink>
           </div>
         </div>
       </div>
@@ -71,18 +85,48 @@ export function HomeHero() {
                 aria-selected={index === active}
                 aria-label={`Show slide ${index + 1}: ${slide.alt}`}
                 onClick={() => show(index)}
-                className={`!min-h-0 !rounded-full !p-0 transition-all ${index === active ? "!h-2 !w-9 !bg-lime" : "!size-2 !bg-primary-foreground/60 hover:!bg-primary-foreground"}`}
-              ><span className="sr-only">Slide {index + 1}</span></Button>
+                className={`!min-h-0 !rounded-full !p-0 transition-all ${index === active ? "!h-2 !w-9 !bg-deep" : "!size-2 !bg-deep/40 hover:!bg-deep"}`}
+              >
+                <span className="sr-only">Slide {index + 1}</span>
+              </Button>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" aria-label="Previous slide" onClick={() => show(active - 1)} className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/45 !p-0 !text-primary-foreground"><ArrowLeft size={18}/></Button>
-            <Button variant="ghost" aria-label={paused ? "Resume slideshow" : "Pause slideshow"} onClick={() => setPaused((value) => !value)} className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/45 !p-0 !text-primary-foreground">{paused ? <Play size={17}/> : <Pause size={17}/>}</Button>
-            <Button variant="ghost" aria-label="Next slide" onClick={() => show(active + 1)} className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/45 !p-0 !text-primary-foreground"><ArrowRight size={18}/></Button>
+            <Button
+              variant="ghost"
+              aria-label="Previous slide"
+              onClick={() => show(active - 1)}
+              className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/75 !p-0 !text-primary-foreground"
+            >
+              <ArrowLeft size={18} />
+            </Button>
+            <Button
+              variant="ghost"
+              aria-label={paused ? "Resume slideshow" : "Pause slideshow"}
+              onClick={() => setPaused((value) => !value)}
+              className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/75 !p-0 !text-primary-foreground"
+            >
+              {paused ? <Play size={17} /> : <Pause size={17} />}
+            </Button>
+            <Button
+              variant="ghost"
+              aria-label="Next slide"
+              onClick={() => show(active + 1)}
+              className="hero-control !size-11 !rounded-full !border !border-primary-foreground/35 !bg-deep/75 !p-0 !text-primary-foreground"
+            >
+              <ArrowRight size={18} />
+            </Button>
           </div>
         </div>
       </div>
-      <div className="hero-progress absolute inset-x-0 bottom-0 z-20 h-1 bg-lime" style={{ animationDuration: `${SLIDE_DURATION}ms`, animationPlayState: paused ? "paused" : "running" }} key={`${active}-${paused}`} />
+      <div
+        className="hero-progress absolute inset-x-0 bottom-0 z-20 h-1 bg-deep"
+        style={{
+          animationDuration: `${SLIDE_DURATION}ms`,
+          animationPlayState: paused ? "paused" : "running",
+        }}
+        key={`${active}-${paused}`}
+      />
     </section>
   );
 }

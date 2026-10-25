@@ -1,19 +1,16 @@
-import hero from "../assets/acflo-hero.jpg";
-import community from "../assets/acflo-community.jpg";
-import summit from "../assets/acflo-summit.jpg";
-import field from "../assets/acflo-field.jpg";
+// All website imagery replaced with the supplied Cloudinary assets.
+export const CLOUDINARY_IMAGE_1 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873606/WhatsApp_Image_2026-10-24_at_20.41.02_svlzqu.jpg";
+export const CLOUDINARY_IMAGE_2 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873606/WhatsApp_Image_2026-10-24_at_20.41.01_zaic0g.jpg";
+export const CLOUDINARY_IMAGE_3 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873605/WhatsApp_Image_2026-10-24_at_20.41.00_eh0ghd.jpg";
+export const CLOUDINARY_IMAGE_4 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873604/WhatsApp_Image_2026-10-24_at_20.40.56_r5ke7y.jpg";
+export const CLOUDINARY_IMAGE_5 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873604/WhatsApp_Image_2026-09-26_at_17.48.31_si6g3p.jpg";
+export const CLOUDINARY_IMAGE_6 = "https://res.cloudinary.com/dsewg9nlw/image/upload/v1792873604/WhatsApp_Image_2026-10-24_at_20.40.59_mvnpzv.jpg";
+export const CLOUDINARY_VIDEO_1 = "https://res.cloudinary.com/dsewg9nlw/video/upload/v1792873639/WhatsApp_Video_2026-10-24_at_20.37.54_xapfan.mp4";
 
-import heroShare from "../assets/acflo-hero-share.jpg.asset.json";
-import communityShare from "../assets/acflo-community-share.jpg.asset.json";
-import summitShare from "../assets/acflo-summit-share.jpg.asset.json";
-import fieldShare from "../assets/acflo-field-share.jpg.asset.json";
-import partner0 from "../assets/partner-0.png.asset.json";
-import partner1 from "../assets/partner-1.png.asset.json";
-import partner2 from "../assets/partner-2.png.asset.json";
-import partner3 from "../assets/partner-3.png.asset.json";
-import partner4 from "../assets/partner-4.png.asset.json";
-import partner5 from "../assets/partner-5.png.asset.json";
-
+export const hero = CLOUDINARY_IMAGE_1;
+export const community = CLOUDINARY_IMAGE_2;
+export const summit = CLOUDINARY_IMAGE_3;
+export const field = CLOUDINARY_IMAGE_4;
 export const images = { hero, community, summit, field };
 export const communityLocation = {
   name: "ZOZAC Community",
@@ -26,10 +23,9 @@ export const heroSlides = [
   {image: summit, alt: "Delegates at an African leadership gathering"},
   {image: field, alt: "Community members sharing ideas in the field"},
 ];
-// Hosted 1200×630 renditions for link previews; these match the photography shown on the pages.
-export const shareImages = {hero: heroShare, community: communityShare, summit: summitShare, field: fieldShare};
-export const shareImageUrl = (asset: {url: string}) => `https://id-preview--6e97e86b-9184-4be8-856b-7c92096cfae3.lovable.app${asset.url}`;
-const partnerLogos = [partner0, partner1, partner2, partner3, partner4, partner5];
+export const shareImages = {hero: hero, community: community, summit: summit, field: field};
+export const shareImageUrl = (asset: string) => asset;
+const partnerLogos = [CLOUDINARY_IMAGE_5, CLOUDINARY_IMAGE_6, CLOUDINARY_IMAGE_1, CLOUDINARY_IMAGE_2, CLOUDINARY_IMAGE_3, CLOUDINARY_IMAGE_4];
 export const countries = [
   { name: "Cameroon", flag: "🇨🇲", count: 18, activities: 7 }, { name: "Uganda", flag: "🇺🇬", count: 12, activities: 4 },
   { name: "Nigeria", flag: "🇳🇬", count: 22, activities: 9 }, { name: "Ghana", flag: "🇬🇭", count: 14, activities: 5 },
@@ -60,7 +56,7 @@ const orgBases = [
 ];
 export const slugify = (s: string) => s.toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 export const organizations = orgBases.map(([name,country,city,sector,type],i) => ({ id: slugify(name), name, country, city, sector, type, initials: name.split(" ").map(x=>x[0]).slice(0,3).join(""), description: `A locally rooted ${type.toLowerCase()} advancing ${sector.toLowerCase()} through community-led collaboration in ${city}, ${country}.`, website: `https://example.org/${slugify(name)}`, image: [community,field,hero][i%3] }));
-export const partners = ["ZOZAC Community", "Community Development Africa", "African Youth Network", "Global Local Action Initiative", "Community Impact Partners", "Africa Capacity Hub"].map((name,i)=>({ name, country: countries[i%countries.length].name, category: ["Strategic Partners","Implementing Partners","Community Partners","Institutional Partners","Knowledge Partners"][i%5], description: `A demonstration partner profile focused on locally led collaboration and community impact.`, website: "https://example.org", logo: partnerLogos[i].url }));
+export const partners = ["ZOZAC Community", "Community Development Africa", "African Youth Network", "Global Local Action Initiative", "Community Impact Partners", "Africa Capacity Hub"].map((name,i)=>({ name, country: countries[i%countries.length].name, category: ["Strategic Partners","Implementing Partners","Community Partners","Institutional Partners","Knowledge Partners"][i%5], description: `A demonstration partner profile focused on locally led collaboration and community impact.`, website: "https://example.org", logo: partnerLogos[i] }));
 export const events = [
   { id:"acflo-executive-summit-2026", title:"ACFLO Executive Summit 2026", date:"November 18, 2026", country:"Cameroon", location:"Douala, Cameroon", type:"Summit", image:summit, description:"A gathering to connect local leaders, share perspectives and imagine stronger collaboration across Africa." },
   { id:"community-leadership-forum", title:"Community Leadership Forum", date:"December 04, 2026", country:"Ghana", location:"Accra, Ghana", type:"Forum", image:hero, description:"A space for community voices and practical leadership exchange." },
@@ -71,7 +67,7 @@ const headlines = [
   "Why locally led change matters now more than ever", "Building bridges between community organizations", "Women leaders shaping stronger communities", "A new chapter for African civil society", "Lessons from the field: collaboration in action", "Youth voices at the heart of local action", "Community-driven solutions in Cameroon", "The power of regional partnerships", "Learning together across borders", "Five ideas for resilient local organizations", "Inside a community leadership workshop", "From conversation to collective action", "Creating space for emerging leaders", "How local networks share knowledge", "Looking ahead: a connected African network"
 ];
 export const news = headlines.map((title,i)=>({ id:slugify(title), title, category:["News","Articles","Announcements","Events","Photo Stories"][i%5], country:countries[i%countries.length].name, date:["September 12, 2026","August 28, 2026","July 19, 2026"][i%3], author:"ACFLO Editorial", readTime:`${4+i%4} min read`, excerpt:"Exploring the people, ideas and connections driving locally led change across African communities.", image:[community,hero,field,summit][i%4] }));
-export const videos = ["Building Local Networks Across Africa", "ACFLO Executive Summit 2026", "Stories From Our Community", "Women Leading Local Change", "A Conversation on Collaboration", "Learning From the Field"].map((title,i)=>({ title, category:["Community Stories","Events","Interviews","Training","Advocacy","Organization Stories"][i], country:countries[i%8].name, duration:["04:28","12:16","06:34","08:11","05:42","03:57"][i], image:[field,summit,community,hero][i%4] }));
+export const videos = ["Building Local Networks Across Africa", "ACFLO Executive Summit 2026", "Stories From Our Community", "Women Leading Local Change", "A Conversation on Collaboration", "Learning From the Field"].map((title,i)=>({ title, category:["Community Stories","Events","Interviews","Training","Advocacy","Organization Stories"][i], country:countries[i%8].name, duration:["04:28","12:16","06:34","08:11","05:42","03:57"][i], videoUrl: CLOUDINARY_VIDEO_1, image:[field,summit,community,hero][i%4] }));
 export const gallery = ["A community conversation", "Leaders gathered for dialogue", "Planning local action", "Sharing knowledge together", "An afternoon in the field", "Connections across communities", "Learning in practice", "A new generation of leaders"].map((caption,i)=>({ caption, category:["Community","Events","Field Activities","Training","Partnerships"][i%5], location:countries[i%8].name, date:"2026", image:[community,summit,field,hero][i%4] }));
 export const resources = ["Local Leadership Toolkit", "Community Collaboration Guide", "African Civil Society Insights", "Summit Briefing Notes", "Facilitator Training Materials", "Statement on Locally Led Action", "Regional Learning Report", "Network Development Framework"].map((title,i)=>({ title, type:["Toolkits","Publications","Research","Summit Reports","Training Materials","Statements","Reports"][i%7], date:"2026", description:"A demonstration resource for organizations building community-led impact.", country:countries[i%8].name }));
 export const leadership = ["Secretariat", "Executive / Steering Committee", "Country / Chapter Coordinators", "Advisory Board"].map((name,i)=>({ name, description:["Coordinates operations and network support.","Guides shared priorities and accountability.","Connects locally rooted work across geographies.","Offers strategic perspectives and expertise."][i] }));
